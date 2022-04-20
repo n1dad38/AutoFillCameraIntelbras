@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from functions import Functions
 
 inp = input("IP: ")
 new = input("New Ip: ")
@@ -13,11 +14,10 @@ chrome_webdriver = webdriver.Chrome()
 
 chrome_webdriver.get(ip_default)
 
+# First Access:
 if ja_preenc == 'n':
-    element = WebDriverWait(chrome_webdriver, 10).until(
-        EC.presence_of_element_located((By.NAME, "newpwd"))
-    )
-
+    Functions.waitByName(chrome_webdriver, "newpwd")
+    
     field = chrome_webdriver.find_element_by_name("newpwd")
     field.send_keys("admin@1234")
 
@@ -50,6 +50,8 @@ if ja_preenc == 'n':
     button = chrome_webdriver.find_element_by_xpath('//*[@id="login_permission3"]/div[3]/div/a')
     button.click()
     
+
+# After first access:
 element = WebDriverWait(chrome_webdriver, 10).until(
     EC.presence_of_element_located((By.ID, "login_user"))
 )
@@ -86,51 +88,43 @@ button = chrome_webdriver.find_element_by_xpath('//*[@id="page_networkConfig"]/d
 button.click()
 
 field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[1]')
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
+for i in range(3):
+    field.send_keys(Keys.BACKSPACE)
 field.send_keys(teste[0])
 
 field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[2]')
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
+for i in range(3):
+    field.send_keys(Keys.BACKSPACE)
 field.send_keys(teste[1])
 
 field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[3]')
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
+for i in range(3):
+    field.send_keys(Keys.BACKSPACE)
 field.send_keys(teste[2])
 
 field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[4]')
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
+for i in range(3):
+    field.send_keys(Keys.BACKSPACE)
 field.send_keys(teste[3])
 
 field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[1]')
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
+for i in range(3):
+    field.send_keys(Keys.BACKSPACE)
 field.send_keys(teste[0])
 
 field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[2]')
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
+for i in range(3):
+    field.send_keys(Keys.BACKSPACE)
 field.send_keys(teste[1])
 
 field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[3]')
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
+for i in range(3):
+    field.send_keys(Keys.BACKSPACE)
 field.send_keys(teste[2])
 
 field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[4]')
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
-field.send_keys(Keys.BACKSPACE)
+for i in range(3):
+    field.send_keys(Keys.BACKSPACE)
 field.send_keys('1')
 
 
