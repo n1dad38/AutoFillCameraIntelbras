@@ -1,135 +1,156 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from time import sleep
 from selenium.webdriver.common.keys import Keys
-from functions import Functions
+from autoFillSupp import waitByName, waitByXPath, waitById
+from sheetParser import excelParser
 
-inp = input("IP: ")
-new = input("New Ip: ")
-teste = new.split('.')
-ip_default = "http://" + str(inp) 
-ja_preenc = input("Inicialização Já Feita? (S/N): ")
-chrome_webdriver = webdriver.Chrome()
+# Enter with the first line of the excel file
+firstLine = int(input("\u001b[33mA partir de qual linha? \u001b[0m"))
 
-chrome_webdriver.get(ip_default)
+# Fill the path here: 
+ipsList = excelParser("path", firstLine)
 
-# First Access:
-if ja_preenc == 'n':
-    Functions.waitByName(chrome_webdriver, "newpwd")
-    
-    field = chrome_webdriver.find_element_by_name("newpwd")
-    field.send_keys("admin@1234")
+# Gateway handling
+gateway = [ipsList[0].split('.')[0], ipsList[0].split('.')[1], ipsList[0].split('.')[2], '1']
 
-    field = chrome_webdriver.find_element_by_name("newpwdcfm")
-    field.send_keys("admin@1234")
+n = int(0)
 
-    field = chrome_webdriver.find_element_by_id("devInit_bindMail")
-    field.send_keys("samuel@lygs.com.br")
+currentIp = input("\u001b[33mIP padrão das câmeras: \u001b[0m")
+path = "http://" + str(currentIp) 
+alreadyFilled = input("\u001b[33mInicialização Já Feita? \u001b[35m(s/n)\u001b[33m: \u001b[0m")
 
-    field = chrome_webdriver.find_element_by_id('devInit_bindPhone')
-    field.send_keys("11953330447")
-
-    button = chrome_webdriver.find_element_by_xpath('//*[@id="device_init"]/div[3]/div/a')
-    button.click()
-
-    element = WebDriverWait(chrome_webdriver, 10).until(
-        EC.presence_of_element_located((By.XPATH, '//*[@id="login_permission1"]/div[2]/div[2]/label[1]/label'))
-    )
-
-    button = chrome_webdriver.find_element_by_xpath('//*[@id="login_permission1"]/div[2]/div[2]/label[1]/label')
-    button.click()
-
-    button = chrome_webdriver.find_element_by_xpath('//*[@id="login_permission1"]/div[3]/div/a')
-    button.click()
-
-    element = WebDriverWait(chrome_webdriver, 10).until(
-        EC.presence_of_element_located((By.XPATH, '//*[@id="login_permission3"]/div[3]/div/a'))
-    )
-
-    button = chrome_webdriver.find_element_by_xpath('//*[@id="login_permission3"]/div[3]/div/a')
-    button.click()
-    
-
-# After first access:
-element = WebDriverWait(chrome_webdriver, 10).until(
-    EC.presence_of_element_located((By.ID, "login_user"))
-)
-
-field = chrome_webdriver.find_element_by_xpath('//*[@id="login_user"]')
-field.send_keys("admin")
-
-field = chrome_webdriver.find_element_by_xpath('//*[@id="login_psw"]')
-field.send_keys('admin@1234')
-
-button = chrome_webdriver.find_element_by_xpath('//*[@id="login"]/div[1]/div[1]/div[2]/form/div[6]/a')
-button.click()
+# Default Password
+if alreadyFilled == 'n':
+    defaultPasswd = str(input("\u001b[33mDigite a senha padrão a ser utilizada: \u001b[0m"))
+else:
+    defaultPasswd = str(input("\u001b[33mSenha para Login: \u001b[0m"))
 
 
-element = WebDriverWait(chrome_webdriver, 10).until(
-    EC.presence_of_element_located((By.XPATH, '//*[@id="custom_menu_wrap"]/ul[2]/li[2]/label'))
-)
+for a in range(len(ipsList)):
+    # First Access:
+    if alreadyFilled == 'n':
 
-button = chrome_webdriver.find_element_by_xpath('//*[@id="custom_menu_wrap"]/ul[2]/li[2]/label')
-button.click()
+        # Initiating
+        chrome_webdriver = webdriver.Chrome()
+        chrome_webdriver.get(path)
 
-element = WebDriverWait(chrome_webdriver, 10).until(
-    EC.presence_of_element_located((By.XPATH, '//*[@id="custom_menu_container"]/div/ul[1]/li[3]/i'))
-)
+        # First Configuration
+        waitByName(chrome_webdriver, "newpwd")
+        
+        field = chrome_webdriver.find_element_by_name("newpwd")
+        field.send_keys(defaultPasswd)
 
-button = chrome_webdriver.find_element_by_xpath('//*[@id="custom_menu_container"]/div/ul[1]/li[3]/i')
-button.click()
+        field = chrome_webdriver.find_element_by_name("newpwdcfm")
+        field.send_keys(defaultPasswd)
 
-element = WebDriverWait(chrome_webdriver, 10).until(
-    EC.presence_of_element_located((By.XPATH, '//*[@id="page_networkConfig"]/div/div/div[1]/div[1]/label[2]/label'))
-)
+        field = chrome_webdriver.find_element_by_id("devInit_bindMail")
+        field.send_keys("samuel@lygs.com.br")
 
-button = chrome_webdriver.find_element_by_xpath('//*[@id="page_networkConfig"]/div/div/div[1]/div[1]/label[2]/label')
-button.click()
+        field = chrome_webdriver.find_element_by_id('devInit_bindPhone')
+        field.send_keys("11953330447")
 
-field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[1]')
-for i in range(3):
-    field.send_keys(Keys.BACKSPACE)
-field.send_keys(teste[0])
+        button = chrome_webdriver.find_element_by_xpath('//*[@id="device_init"]/div[3]/div/a')
+        button.click()
 
-field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[2]')
-for i in range(3):
-    field.send_keys(Keys.BACKSPACE)
-field.send_keys(teste[1])
+        sleep(5)
 
-field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[3]')
-for i in range(3):
-    field.send_keys(Keys.BACKSPACE)
-field.send_keys(teste[2])
+        button = chrome_webdriver.find_element_by_xpath('//*[@id="login_permission1"]/div[2]/div[2]/label[1]/label')
+        button.click()
 
-field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[4]')
-for i in range(3):
-    field.send_keys(Keys.BACKSPACE)
-field.send_keys(teste[3])
+        button = chrome_webdriver.find_element_by_xpath('//*[@id="login_permission1"]/div[3]/div/a')
+        button.click()
 
-field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[1]')
-for i in range(3):
-    field.send_keys(Keys.BACKSPACE)
-field.send_keys(teste[0])
+        sleep(1)
 
-field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[2]')
-for i in range(3):
-    field.send_keys(Keys.BACKSPACE)
-field.send_keys(teste[1])
+        button = chrome_webdriver.find_element_by_xpath('//*[@id="login_permission3"]/div[3]/div/a')
+        button.click()
 
-field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[3]')
-for i in range(3):
-    field.send_keys(Keys.BACKSPACE)
-field.send_keys(teste[2])
+        # Just testing the refresh page
+        chrome_webdriver.refresh()
+        
 
-field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[4]')
-for i in range(3):
-    field.send_keys(Keys.BACKSPACE)
-field.send_keys('1')
+    # After first access:
+    #Login Area
+    waitById(chrome_webdriver, "login_user")
+
+    #User
+    chrome_webdriver.find_element_by_xpath('//*[@id="login_user"]').send_keys("admin")
+    #Password
+    chrome_webdriver.find_element_by_xpath('//*[@id="login_psw"]').send_keys(defaultPasswd)
+    #Submit Login
+    chrome_webdriver.find_element_by_xpath('//*[@id="login"]/div[1]/div[1]/div[2]/form/div[6]/a').click()
+
+    # Navigation Area
+    waitByXPath(chrome_webdriver, '//*[@id="custom_menu_wrap"]/ul[2]/li[2]/label')
+
+    chrome_webdriver.find_element_by_xpath('//*[@id="custom_menu_wrap"]/ul[2]/li[2]/label').click()
+
+    waitByXPath(chrome_webdriver, '//*[@id="custom_menu_container"]/div/ul[1]/li[3]/i')
+
+    chrome_webdriver.find_element_by_xpath('//*[@id="custom_menu_container"]/div/ul[1]/li[3]/i').click()
+
+    waitByXPath(chrome_webdriver, '//*[@id="page_networkConfig"]/div/div/div[1]/div[1]/label[2]/label')
+
+    chrome_webdriver.find_element_by_xpath('//*[@id="page_networkConfig"]/div/div/div[1]/div[1]/label[2]/label').click()
+
+    # IP handling:
+    handledIP = [ipsList[n].split('.')[0], ipsList[n].split('.')[1], ipsList[n].split('.')[2], ipsList[n].split('.')[3]]
+
+    # Filling IP
+    field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[1]')
+    for i in range(3):
+        field.send_keys(Keys.BACKSPACE)
+    field.send_keys(handledIP[0])
+
+    field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[2]')
+    for i in range(3):
+        field.send_keys(Keys.BACKSPACE)
+    field.send_keys(handledIP[1])
+
+    field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[3]')
+    for i in range(3):
+        field.send_keys(Keys.BACKSPACE)
+    field.send_keys(handledIP[2])
+
+    field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_IP"]/input[4]')
+    for i in range(3):
+        field.send_keys(Keys.BACKSPACE)
+    field.send_keys(handledIP[3])
 
 
+    #Filling Gateway
+    field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[1]')
+    for i in range(3):
+        field.send_keys(Keys.BACKSPACE)
+    field.send_keys(gateway[0])
 
-button = chrome_webdriver.find_element_by_xpath('//*[@id="page_networkConfig"]/div/div/div[5]/a[2]')
-button.click()
+    field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[2]')
+    for i in range(3):
+        field.send_keys(Keys.BACKSPACE)
+    field.send_keys(gateway[1])
 
-chrome_webdriver.close()
+    field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[3]')
+    for i in range(3):
+        field.send_keys(Keys.BACKSPACE)
+    field.send_keys(gateway[2])
+
+    field = chrome_webdriver.find_element_by_xpath('//*[@id="NN_IPV4_DG"]/input[4]')
+    for i in range(3):
+        field.send_keys(Keys.BACKSPACE)
+    field.send_keys(gateway[3])
+
+    #Clicking Apply
+    chrome_webdriver.find_element_by_xpath('//*[@id="page_networkConfig"]/div/div/div[5]/a[2]').click()
+
+    #Waiting for save
+    sleep(3)
+
+    #Closing browser
+    chrome_webdriver.close()
+
+    #If last Ip in list
+    if ipsList[-1] != ipsList[n]:
+        prox = input("\u001b[33mSe outra câmera plugada e pingando pressione enter.\u001b[0m")
+        n += 1
+    else:
+        print("\u001b[32mFinalizado!\u001b[0m")
